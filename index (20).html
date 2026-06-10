@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B2B BlogIntel — Recruitment Tech Content Intelligence</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --panel:#fff; --ink:#0e1726; --muted:#6b7280; --line:#e6e9ef;
+    --blue:#2563eb; --blue-soft:#eef4ff; --side:#101828; --side-ink:#cdd5e0; --side-active:#1d2939;
+    --orange:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+  a{color:var(--blue);text-decoration:none}
+  .app{display:flex;min-height:100vh}
+  /* sidebar */
+  .side{width:230px;background:var(--side);color:var(--side-ink);flex-shrink:0;padding:0 0 30px}
+  .brand{display:flex;align-items:center;gap:10px;padding:20px 18px;border-bottom:1px solid #1d2939}
+  .brand .logo{width:32px;height:32px;border-radius:7px;background:var(--orange);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .brand b{color:#fff;font-size:16px}.brand b span{color:var(--orange)}
+  .side h6{font-size:10.5px;letter-spacing:.08em;color:#667085;text-transform:uppercase;margin:20px 18px 8px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:9px 18px;color:var(--side-ink);font-size:13.5px;cursor:pointer}
+  .nav a:hover{background:#16202e}
+  .nav a.on{background:var(--side-active);color:#fff;border-left:3px solid var(--orange);padding-left:15px}
+  .sitelist a{display:flex;align-items:center;gap:9px;padding:6px 18px;color:var(--side-ink);font-size:13px;cursor:pointer}
+  .sitelist a:hover{color:#fff}.sitelist .dot{width:8px;height:8px;border-radius:50%}
+  .qr a{display:block;padding:5px 18px;color:#8a94a6;font-size:12.5px;cursor:pointer}
+  .qr a:hover,.qr a.on{color:var(--orange)}
+  /* main */
+  .main{flex:1;min-width:0}
+  .top{display:flex;align-items:center;gap:14px;padding:14px 26px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .search{flex:1;max-width:560px;position:relative}
+  .search input{width:100%;padding:10px 12px 10px 34px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;background:#fafbfc}
+  .search:before{content:"🔍";position:absolute;left:11px;top:9px;opacity:.5;font-size:13px}
+  .pill-found{background:#fff4e6;color:#b45309;border:1px solid #fde3c0;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600}
+  .top .date{color:var(--muted);font-size:13px}
+  .ava{width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .wrap{padding:26px 30px;max-width:1240px}
+  h1{font-size:26px;margin:0 0 5px}
+  .sub{color:var(--muted);margin:0 0 18px;font-size:13.5px}
+  .tabs{display:flex;gap:26px;border-bottom:1px solid var(--line);margin-bottom:22px}
+  .tabs a{padding:10px 2px;color:var(--muted);font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tabs a.on{color:var(--blue);border-color:var(--blue)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .card h3{margin:0 0 3px;font-size:16px}.card .ch-sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+  /* selector */
+  .selector{margin-bottom:22px}
+  .sites{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .sc{border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;background:#fff;transition:.12s}
+  .sc:hover{border-color:#c7d2fe}
+  .sc.on{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+  .sc .nm{font-weight:700;display:flex;align-items:center;gap:7px;font-size:13.5px}
+  .sc .ct{color:var(--muted);font-size:11.5px;margin-top:3px}
+  .ranges{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+  .rg{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;font-size:12.5px;cursor:pointer}
+  .rg.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .dates{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .dates input{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
+  .getbtn{width:100%;background:var(--blue);color:#fff;border:0;border-radius:9px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer}
+  .getbtn:hover{background:#1d4ed8}
+  .insight{display:flex;gap:14px;background:var(--blue-soft);border:1px solid #dbe6ff;border-radius:11px;padding:16px;margin:18px 0}
+  .insight .ic{font-size:20px}
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:22px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+  .stat:before{content:"";position:absolute;top:0;left:0;right:0;height:4px}
+  .stat.c1:before{background:var(--orange)}.stat.c2:before{background:var(--blue)}
+  .stat.c3:before{background:#8b5cf6}.stat.c4:before{background:#10b981}
+  .stat .ic{width:38px;height:38px;border-radius:9px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+  .stat .big{font-size:30px;font-weight:800;line-height:1}
+  .stat .lb{color:var(--muted);font-size:13px;margin-top:6px}.stat .xs{color:#9aa3b2;font-size:11.5px;margin-top:3px}
+  .grid2{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:22px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  /* timeline bars */
+  .tl{display:flex;align-items:flex-end;gap:6px;height:200px;padding-top:10px;overflow-x:auto}
+  .tl .bar{flex:1;min-width:18px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px}
+  .tl .bar .b{width:60%;min-height:3px;background:#ffd8a8;border-radius:4px 4px 0 0}
+  .tl .bar .v{font-size:11px;color:var(--muted)}.tl .bar .x{font-size:10px;color:#9aa3b2;transform:rotate(-30deg);white-space:nowrap}
+  /* category list */
+  .catrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f3f7;font-size:13px}
+  .catrow .dot{width:9px;height:9px;border-radius:50%}.catrow .nm{flex:1}.catrow .pc{color:var(--muted);width:42px;text-align:right}.catrow .n{font-weight:700;width:28px;text-align:right}
+  .catdist .row{margin:11px 0}.catdist .lbl{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+  .catdist .track{height:7px;background:#f1f3f7;border-radius:5px;overflow:hidden}.catdist .fill{height:100%;border-radius:5px}
+  /* clusters */
+  .clusters{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:14px}
+  .cl{border:1px solid var(--line);border-radius:11px;padding:14px}
+  .cl .h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.cl .h b{font-size:14px}
+  .cl .cnt{background:var(--blue-soft);color:var(--blue);border-radius:20px;padding:2px 9px;font-size:11.5px;font-weight:700;white-space:nowrap}
+  .cl .lt{color:var(--muted);font-size:11.5px;margin:7px 0}
+  .chip{display:inline-block;background:#f3f4f6;border-radius:6px;padding:3px 8px;font-size:11px;margin:3px 3px 0 0;color:#475467}
+  /* table */
+  .tbar{display:flex;gap:10px;align-items:center;margin:14px 0;flex-wrap:wrap}
+  .tbar input,.tbar select{border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:13px}
+  .tbar input{flex:1;min-width:200px}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 13px;font-size:12.5px;cursor:pointer;font-weight:600}
+  .btn:hover{background:#f7f9fc}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+  td{padding:12px;border-bottom:1px solid #f1f3f7;vertical-align:top}
+  td .slug{color:#9aa3b2;font-size:11.5px}
+  .badge{background:#dcfce7;color:#15803d;border-radius:5px;padding:1px 6px;font-size:10px;font-weight:700;margin-left:6px}
+  .catpill{padding:3px 9px;border-radius:6px;font-size:11.5px;font-weight:600;white-space:nowrap}
+  .hide{display:none!important}
+  .note{font-size:12px;color:var(--muted);margin-top:10px}
+  .empty{padding:40px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="brand"><div class="logo">BI</div><b>B2B&nbsp;<span>BlogIntel</span></b></div>
+    <h6>Competitor Analysis</h6>
+    <div class="nav">
+      <a class="on" data-tab="overview">📊&nbsp; Blog Overview</a>
+      <a data-tab="timeline">🗓&nbsp; Publishing Timeline</a>
+      <a data-tab="clusters">🧩&nbsp; Content Clusters</a>
+      <a data-tab="posts">📄&nbsp; All Posts</a>
+    </div>
+    <h6>Sites</h6>
+    <div class="sitelist" id="sitelist"></div>
+    <h6>Quick Ranges</h6>
+    <div class="qr" id="qr">
+      <a data-days="30" class="on">Last 30 days</a>
+      <a data-days="90">Last 90 days</a>
+      <a data-days="180">Last 6 months</a>
+      <a data-days="365">Last 1 year</a>
+      <a data-days="all">All time</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="top">
+      <div class="search"><input id="globalSearch" placeholder="Search competitor, topic, keyword..."></div>
+      <span class="pill-found" id="foundPill">0 posts found</span>
+      <span class="date" id="todayLabel"></span>
+      <span class="ava">MT</span>
+    </div>
+
+    <div class="wrap">
+      <h1>B2B Recruitment Content Intelligence</h1>
+      <p class="sub" id="masthead">Track competitor publishing across recruitment & assessment platforms · Data as of —</p>
+
+      <div class="tabs">
+        <a class="on" data-tab="overview">Overview</a>
+        <a data-tab="timeline">Timeline</a>
+        <a data-tab="clusters">Clusters</a>
+        <a data-tab="posts">All Posts</a>
+      </div>
+
+      <!-- SELECTOR -->
+      <div class="card selector">
+        <h3>Select Competitor &amp; Date Range</h3>
+        <p class="ch-sub">Choose a site and time period to analyse their B2B content publishing activity</p>
+        <div style="font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:6px 0 2px">Competitor Site</div>
+        <div class="sites" id="siteCards"></div>
+        <div style="font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:8px 0 2px">Date Range</div>
+        <div class="ranges" id="ranges">
+          <span class="rg" data-days="7">7 days</span>
+          <span class="rg on" data-days="30">30 days</span>
+          <span class="rg" data-days="90">90 days</span>
+          <span class="rg" data-days="180">6 months</span>
+          <span class="rg" data-days="365">1 year</span>
+          <span class="rg" data-days="all">All time</span>
+        </div>
+        <div class="dates">
+          <input type="date" id="dFrom"> <span>→</span> <input type="date" id="dTo">
+        </div>
+        <button class="getbtn" id="getData">▶  Get Data</button>
+      </div>
+
+      <div class="insight" id="insight"></div>
+
+      <!-- OVERVIEW -->
+      <section id="tab-overview">
+        <div class="stats">
+          <div class="stat c1"><div class="ic">📝</div><div class="big" id="sPosts">0</div><div class="lb">Posts in Range</div><div class="xs" id="sRange"></div></div>
+          <div class="stat c2"><div class="ic">🗓</div><div class="big" id="sRate">0</div><div class="lb">Avg Posts / Day</div><div class="xs" id="sRateSub"></div></div>
+          <div class="stat c3"><div class="ic">🗂</div><div class="big" id="sCats">0</div><div class="lb">Categories</div><div class="xs" id="sTopCat"></div></div>
+          <div class="stat c4"><div class="ic">🎯</div><div class="big" id="sClusters">0</div><div class="lb">Clusters Detected</div><div class="xs" style="color:#10b981">Topic patterns found</div></div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><h3>Publishing Timeline</h3><p class="ch-sub" id="tlSub">Posts published per day</p></div>
+              <span class="pill-found" id="tlSite"></span>
+            </div>
+            <div class="tl" id="timelineMini"></div>
+          </div>
+          <div class="card">
+            <h3>Category Breakdown</h3><p class="ch-sub" id="cbSub">0 categories</p>
+            <div id="catBreak"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:22px">
+          <h3>Category Distribution</h3><p class="ch-sub">Posts per category in selected range</p>
+          <div class="catdist" id="catDist"></div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px"><h3 style="margin:0">Content Clusters Detected</h3><span class="cl-count cnt" id="clusterCount" style="background:#f3f4f6;color:#475467;border-radius:20px;padding:2px 10px;font-size:11.5px;font-weight:600">0 patterns</span></div>
+          <div class="clusters" id="clusters"></div>
+        </div>
+      </section>
+
+      <!-- TIMELINE -->
+      <section id="tab-timeline" class="hide">
+        <div class="card"><h3>Publishing Timeline</h3><p class="ch-sub" id="tlSub2">Posts per day across selected range</p><div class="tl" id="timelineFull" style="height:260px"></div></div>
+      </section>
+
+      <!-- CLUSTERS -->
+      <section id="tab-clusters" class="hide">
+        <div class="card"><h3>Content Clusters</h3><p class="ch-sub">Recurring topic patterns the competitor is publishing around — each is a potential SEO push to counter on /employers/.</p><div class="clusters" id="clustersFull"></div></div>
+      </section>
+
+      <!-- POSTS -->
+      <section id="tab-posts" class="hide"></section>
+
+      <!-- ALL POSTS (always shown under overview too) -->
+      <div class="card" id="postsCard" style="margin-top:22px">
+        <div style="display:flex;align-items:center;gap:10px"><h3 style="margin:0">All Posts</h3><span class="pill-found" id="postsCount">0 posts</span></div>
+        <div class="tbar">
+          <input id="tableSearch" placeholder="Search title, URL, category...">
+          <select id="catFilter"><option value="">All categories</option></select>
+          <button class="btn" id="copyUrls">⧉ Copy URLs</button>
+          <button class="btn" id="exportCsv">⬇ Export CSV</button>
+        </div>
+        <table>
+          <thead><tr>
+            <th style="width:36px">#</th><th data-sort="t">Title / Slug</th><th data-sort="d" style="width:130px">Date ↕</th><th data-sort="c" style="width:180px">Category</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="note" id="linkedinNote"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const TODAY='2026-06-10';
+
+// ── Site config ───────────────────────────────────────────────
+const SITES=[
+  {k:'testgorilla', name:'TestGorilla',  cat:'Skills Assessment', color:'#16a34a', base:'https://www.testgorilla.com'},
+  {k:'greenhouse',  name:'Greenhouse',   cat:'ATS / Hiring',      color:'#0ea5e9', base:'https://www.greenhouse.com'},
+  {k:'lever',       name:'Lever',        cat:'ATS / CRM',         color:'#7c3aed', base:'https://www.lever.co'},
+  {k:'workable',    name:'Workable',     cat:'ATS / Resources',   color:'#e11d48', base:'https://resources.workable.com'},
+  {k:'indeed',      name:'Indeed Hire',  cat:'Job Site / Sourcing',color:'#2557a7', base:'https://www.indeed.com'},
+  {k:'linkedin',    name:'LinkedIn Talent',cat:'Sourcing / Brand',color:'#0a66c2', base:'https://www.linkedin.com'},
+  {k:'hackerrank',  name:'HackerRank',   cat:'Coding Assessment', color:'#00b14f', base:'https://www.hackerrank.com'},
+  {k:'hackerearth', name:'HackerEarth',  cat:'Coding Assessment', color:'#2c3e50', base:'https://www.hackerearth.com'},
+  {k:'imocha',      name:'iMocha',       cat:'Skills Assessment', color:'#f97316', base:'https://www.imocha.io'},
+];
+
+// category → colour
+const CATCOLORS={
+  'Talent Sourcing':'#7c3aed','Candidate Assessment':'#16a34a','ATS & Hiring Tech':'#0ea5e9',
+  'AI in Hiring':'#2563eb','Interviewing':'#f59e0b','Employer Branding':'#db2777',
+  'Hiring Strategy':'#0e1726','DEI & Compliance':'#9333ea','Onboarding & Retention':'#14b8a6',
+  'Industry Reports':'#1d4ed8','Job Descriptions':'#a16207','Product Updates':'#06b6d4',
+  'Company News':'#64748b','HR Operations':'#e11d48'
+};
+function catColor(c){return CATCOLORS[c]||'#94a3b8';}
+
+// ── Seed DB (real posts; GitHub Action refreshes daily) ────────
+const DB={
+testgorilla:[
+{u:"https://www.testgorilla.com/blog/what-is-active-sourcing/",t:"What is active sourcing? A complete guide for 2026",d:"2026-03-20",c:"Talent Sourcing"},
+{u:"https://www.testgorilla.com/blog/new-report-active-talent-sourcing/",t:"Our latest report reveals a paradox at the heart of hiring",d:"2025-09-08",c:"Industry Reports"},
+{u:"https://www.testgorilla.com/blog/introducing-testgorilla-product-roadmap/",t:"Introducing TestGorilla 2.0: Skills-first hiring with more hire power",d:"2025-06-05",c:"Product Updates"},
+{u:"https://www.testgorilla.com/blog/where-TG-assessments-fit-in-hiring-process/",t:"Where in the hiring process does a TestGorilla assessment fit best?",d:"2025-04-12",c:"Candidate Assessment"},
+{u:"https://www.testgorilla.com/blog/talent-assessment-framework/",t:"How to build the ultimate talent assessment framework in 6 steps",d:"2025-02-18",c:"Candidate Assessment"}
+],
+greenhouse:[
+{u:"https://www.greenhouse.com/blog/g2-2026-summer-awards",t:"Greenhouse ranked #1 ATS in G2's Summer 2026 Reports – here's why",d:"2026-06-03",c:"Company News"},
+{u:"https://www.greenhouse.com/blog/g2-2026-awards-best-software-spring",t:"Greenhouse named in G2's 2026 Best Software Awards and ranked #1 ATS",d:"2026-03-25",c:"Company News"},
+{u:"https://www.greenhouse.com/guidance/the-hiring-health-check-what-high-performing-ta-teams-look-like-in-2026",t:"The hiring health check: What high-performing TA teams look like in 2026",d:"2026-04-10",c:"Hiring Strategy"},
+{u:"https://www.greenhouse.com/recruiting-benchmarks",t:"Hiring benchmarks 2026: Recruiting metrics and trends",d:"2026-04-25",c:"Industry Reports"}
+],
+lever:[
+{u:"https://www.lever.co/blog/from-chaos-to-clarity-to-connection-how-lever-s-spring-2026-release-puts-the-human-back-in-hiring",t:"How Lever's Spring 2026 release puts the human back in hiring",d:"2026-05-07",c:"Product Updates"},
+{u:"https://www.lever.co/blog/5-hiring-truths-what-2026-benchmarks-reveal-about-your-funnel",t:"5 Hiring Truths: What 2026 Benchmarks Reveal About Your Funnel",d:"2026-05-02",c:"Industry Reports"},
+{u:"https://www.lever.co/blog/category/candidate-sourcing",t:"Building a thriving candidate CRM strategy: best practices",d:"2026-04-02",c:"Talent Sourcing"},
+{u:"https://www.lever.co/blog/category/hiring-strategy",t:"Detecting candidate fraud in the AI era: a TA leader's guide",d:"2026-03-30",c:"AI in Hiring"}
+],
+workable:[
+{u:"https://resources.workable.com/tutorial/talent-assessment",t:"Talent assessment: a complete guide for hiring teams",d:"2026-03-15",c:"Candidate Assessment"},
+{u:"https://resources.workable.com/stories-and-insights",t:"Expert insights: navigating AI at work in recruiting",d:"2026-02-20",c:"AI in Hiring"}
+],
+indeed:[
+{u:"https://www.indeed.com/hire/resources/howtohub/hiring-guide-using-employer-tools",t:"Hiring Guide: How to Use Indeed's Employer Tools",d:"2026-06-08",c:"ATS & Hiring Tech"},
+{u:"https://www.indeed.com/hire/resources/howtohub/how-to-use-indeed-as-a-recruiter",t:"How to Use Indeed as a Recruiter",d:"2026-05-27",c:"Talent Sourcing"},
+{u:"https://www.indeed.com/hire/resources/howtohub/indeed-hiring-events",t:"How to Use Indeed Hiring Events to Hire Quickly at Scale",d:"2026-05-07",c:"Talent Sourcing"},
+{u:"https://www.indeed.com/hire/c/info/hiring-trends",t:"8 Hiring Trends in 2026",d:"2025-11-10",c:"Hiring Strategy"}
+],
+linkedin:[
+{u:"https://www.linkedin.com/business/talent/blog",t:"LinkedIn Talent Blog (auto-crawl limited — see note)",d:"2026-06-01",c:"Employer Branding"}
+],
+hackerrank:[
+{u:"https://www.hackerrank.com/blog/",t:"HackerRank blog — auto-crawl seeds on first GitHub Action run",d:"2026-06-01",c:"Candidate Assessment"}
+],
+hackerearth:[
+{u:"https://www.hackerearth.com/blog/the-complete-guide-to-coding-assessment-tests-for-hiring-2026-types-tools-best-practices",t:"The complete guide to coding assessment tests for hiring 2026",d:"2026-05-08",c:"Candidate Assessment"},
+{u:"https://www.hackerearth.com/blog/technical-skills-assessment-test-tools",t:"10 best technical skills assessment tools in 2026",d:"2025-12-19",c:"Candidate Assessment"}
+],
+imocha:[
+{u:"https://www.imocha.io/blog/hiring-intelligence",t:"Hiring Intelligence for Enterprise Recruiting (2026)",d:"2026-04-15",c:"AI in Hiring"},
+{u:"https://www.imocha.io/blog/talent-assessment-tools",t:"Top 12 Talent Assessment Tools in 2026 for Smarter Hiring",d:"2026-03-31",c:"Candidate Assessment"},
+{u:"https://www.imocha.io/blog/skills-assessment-tools",t:"Top 12 Skills Assessment Tools to Consider in 2026",d:"2026-03-27",c:"Candidate Assessment"},
+{u:"https://www.imocha.io/blog/tech-hiring-trends",t:"Tech Hiring Trends in 2026: Top Skills, AI Roles & Market Shifts",d:"2026-03-17",c:"Hiring Strategy"},
+{u:"https://www.imocha.io/blog/soft-skills-assessment-tools",t:"Top 14 Soft Skills Assessment Tools in 2026",d:"2026-02-05",c:"Candidate Assessment"},
+{u:"https://www.imocha.io/blog/hiring-statistics",t:"100 Key Hiring Statistics to Improve Recruitment in 2026",d:"2026-01-29",c:"Industry Reports"}
+]
+};
+
+// ── State ─────────────────────────────────────────────────────
+let cur='testgorilla', days='30', customFrom=null, customTo=null, sortKey='d', sortDir=-1;
+
+// ── Build sidebar / cards ─────────────────────────────────────
+function siteCount(k){return (DB[k]||[]).length;}
+function buildSites(){
+  document.getElementById('sitelist').innerHTML=SITES.map(s=>
+    `<a data-k="${s.k}"><span class="dot" style="background:${s.color}"></span>${s.name}</a>`).join('');
+  document.getElementById('siteCards').innerHTML=SITES.map(s=>
+    `<div class="sc ${s.k===cur?'on':''}" data-k="${s.k}">
+       <div class="nm"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${s.color}"></span>${s.name}</div>
+       <div class="ct"><span class="site-pill-url">${siteCount(s.k)}</span> posts in database · ${s.cat}</div>
+     </div>`).join('');
+  document.querySelectorAll('.sc,[data-k]').forEach(el=>{
+    if(el.dataset.k) el.onclick=()=>{cur=el.dataset.k;buildSites();render();}
+  });
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function rangeStart(){
+  if(customFrom) return customFrom;
+  if(days==='all') return '2000-01-01';
+  const d=new Date(TODAY); d.setDate(d.getDate()-parseInt(days));
+  return d.toISOString().slice(0,10);
+}
+function rangeEnd(){return customTo||TODAY;}
+function inRange(p){const s=rangeStart(),e=rangeEnd();return p.d>=s&&p.d<=e;}
+function curPosts(){return (DB[cur]||[]).filter(inRange).sort((a,b)=>b.d.localeCompare(a.d));}
+
+// cluster detection: 2-3 word slug n-grams
+function detectClusters(posts){
+  const grams={};
+  posts.forEach(p=>{
+    const slug=p.u.replace(/\/$/,'').split('/').pop().replace(/[^a-z0-9-]/gi,'').toLowerCase();
+    const w=slug.split('-').filter(x=>x.length>2&&!['the','and','for','your','with','how','best','top','what'].includes(x));
+    for(let i=0;i<w.length-1;i++){
+      const g=w[i]+' '+w[i+1];
+      (grams[g]=grams[g]||[]).push(p);
+    }
+  });
+  return Object.entries(grams).filter(([g,a])=>a.length>=2)
+    .sort((a,b)=>b[1].length-a[1].length).slice(0,8)
+    .map(([g,a])=>({name:g.replace(/\b\w/g,c=>c.toUpperCase()),posts:a,
+      slugs:[...new Set(a.map(p=>p.u.replace(/\/$/,'').split('/').pop().slice(0,26)))].slice(0,3)}));
+}
+
+// ── Render ────────────────────────────────────────────────────
+function render(){
+  const posts=curPosts(), site=SITES.find(s=>s.k===cur);
+  document.getElementById('todayLabel').textContent=new Date(TODAY).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('masthead').textContent=
+    `Track competitor publishing · ${SITES.map(s=>s.name).join(' · ')} · Data as of ${new Date(TODAY).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+  document.getElementById('foundPill').textContent=posts.length+' posts found';
+  document.getElementById('tlSite').textContent=site.name;
+
+  // stats
+  const dspan=Math.max(1,Math.round((new Date(rangeEnd())-new Date(rangeStart()))/864e5));
+  document.getElementById('sPosts').textContent=posts.length;
+  document.getElementById('sRange').textContent=rangeStart()+' → '+rangeEnd();
+  document.getElementById('sRate').textContent=(posts.length/dspan).toFixed(1);
+  document.getElementById('sRateSub').textContent='Over '+dspan+' days';
+  const cats={};posts.forEach(p=>cats[p.c]=(cats[p.c]||0)+1);
+  const catArr=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('sCats').textContent=catArr.length;
+  document.getElementById('sTopCat').textContent=catArr.length?'Top: '+catArr[0][0]:'—';
+  const clusters=detectClusters(posts);
+  document.getElementById('sClusters').textContent=clusters.length;
+
+  // insight
+  const ins=document.getElementById('insight');
+  if(clusters.length){
+    const c=clusters[0], pct=Math.round(c.posts.length/Math.max(1,posts.length)*100);
+    ins.innerHTML=`<div class="ic">💡</div><div><b>Intelligence Summary</b><br>
+      <b>${site.name}</b> is running a cluster on <b>"${c.name}"</b> — ${c.posts.length} posts (${pct}% of output in range).
+      ${catArr.length?'Their top category is <b>'+catArr[0][0]+'</b>.':''} Counter this on your <b>/employers/</b> pages.</div>`;
+    ins.style.display='flex';
+  } else {ins.style.display='none';}
+
+  // timeline (group by day)
+  const byDay={};posts.forEach(p=>byDay[p.d]=(byDay[p.d]||0)+1);
+  const dkeys=Object.keys(byDay).sort();
+  const tlHTML=dkeys.map(d=>{const v=byDay[d],h=Math.max(6,v/Math.max(...Object.values(byDay),1)*150);
+    return `<div class="bar"><div class="v">${v}</div><div class="b" style="height:${h}px"></div><div class="x">${d.slice(5)}</div></div>`;}).join('')
+    ||'<div class="empty">No posts in this range</div>';
+  document.getElementById('timelineMini').innerHTML=tlHTML;
+  document.getElementById('timelineFull').innerHTML=tlHTML;
+  document.getElementById('tlSub').textContent=`Posts published per day · ${dkeys.length} active days`;
+
+  // category breakdown
+  document.getElementById('cbSub').textContent=catArr.length+' categories';
+  document.getElementById('catBreak').innerHTML=catArr.map(([c,n])=>{
+    const pc=Math.round(n/Math.max(1,posts.length)*100);
+    return `<div class="catrow"><span class="dot" style="background:${catColor(c)}"></span>
+      <span class="nm">${c}</span><span class="pc">${pc}%</span><span class="n">${n}</span></div>`;}).join('')
+    ||'<div class="empty">—</div>';
+
+  // category distribution
+  const maxN=Math.max(...catArr.map(c=>c[1]),1);
+  document.getElementById('catDist').innerHTML=catArr.map(([c,n])=>
+    `<div class="row"><div class="lbl"><span>${c}</span><span>${n} post${n>1?'s':''}</span></div>
+     <div class="track"><div class="fill" style="width:${n/maxN*100}%;background:${catColor(c)}"></div></div></div>`).join('')
+    ||'<div class="empty">—</div>';
+
+  // clusters
+  const clHTML=clusters.map(c=>
+    `<div class="cl"><div class="h"><b>${c.name}</b><span class="cnt">${c.posts.length} posts</span></div>
+     <div class="lt">Latest: ${c.posts.map(p=>p.d).sort().slice(-1)[0]}</div>
+     ${c.slugs.map(s=>`<span class="chip">${s}</span>`).join('')}</div>`).join('')
+     ||'<div class="empty">No recurring patterns in range</div>';
+  document.getElementById('clusters').innerHTML=clHTML;
+  document.getElementById('clustersFull').innerHTML=clHTML;
+  document.getElementById('clusterCount').textContent=clusters.length+' patterns';
+
+  renderTable(posts);
+  // linkedin note
+  document.getElementById('linkedinNote').innerHTML = (cur==='linkedin'||cur==='hackerrank')
+    ? '⚠ This site is JS-rendered / bot-restricted. The daily crawler attempts it but may rely on the seeded set — add posts manually if auto-fetch returns few.' : '';
+}
+
+function renderTable(posts){
+  let rows=[...posts];
+  const q=(document.getElementById('tableSearch').value||'').toLowerCase();
+  const cf=document.getElementById('catFilter').value;
+  if(q) rows=rows.filter(p=>(p.t+p.u+p.c).toLowerCase().includes(q));
+  if(cf) rows=rows.filter(p=>p.c===cf);
+  rows.sort((a,b)=>{const r=(a[sortKey]||'').localeCompare(b[sortKey]||'');return sortDir<0?-r:r;});
+  document.getElementById('postsCount').textContent=rows.length+' posts';
+  const recent=new Date(TODAY);recent.setDate(recent.getDate()-7);
+  document.getElementById('tbody').innerHTML=rows.map((p,i)=>{
+    const slug=p.u.replace(/\/$/,'').split('/').pop();
+    const isNew=new Date(p.d)>=recent;
+    return `<tr><td>${i+1}</td>
+      <td><a href="${p.u}" target="_blank">${p.t}</a>${isNew?'<span class="badge">NEW</span>':''}<div class="slug">${slug}</div></td>
+      <td>${p.d}</td>
+      <td><span class="catpill" style="background:${catColor(p.c)}1a;color:${catColor(p.c)}">${p.c}</span></td></tr>`;
+  }).join('')||'<tr><td colspan="4" class="empty">No posts match</td></tr>';
+  // cat filter options
+  const sel=document.getElementById('catFilter'), keep=sel.value;
+  const allCats=[...new Set(posts.map(p=>p.c))].sort();
+  sel.innerHTML='<option value="">All categories</option>'+allCats.map(c=>`<option ${c===keep?'selected':''}>${c}</option>`).join('');
+}
+
+// ── Events ────────────────────────────────────────────────────
+function setRange(d){days=d;customFrom=customTo=null;
+  document.querySelectorAll('#ranges .rg').forEach(r=>r.classList.toggle('on',r.dataset.days===d));
+  document.querySelectorAll('#qr a').forEach(r=>r.classList.toggle('on',r.dataset.days===d));
+  document.getElementById('dFrom').value='';document.getElementById('dTo').value='';render();}
+document.querySelectorAll('#ranges .rg').forEach(r=>r.onclick=()=>setRange(r.dataset.days));
+document.querySelectorAll('#qr a').forEach(r=>r.onclick=()=>setRange(r.dataset.days));
+document.getElementById('getData').onclick=()=>{
+  const f=document.getElementById('dFrom').value,t=document.getElementById('dTo').value;
+  if(f&&t){customFrom=f;customTo=t;document.querySelectorAll('.rg,#qr a').forEach(r=>r.classList.remove('on'));}
+  render();};
+document.getElementById('tableSearch').oninput=()=>renderTable(curPosts());
+document.getElementById('catFilter').onchange=()=>renderTable(curPosts());
+document.getElementById('globalSearch').oninput=function(){
+  document.getElementById('tableSearch').value=this.value;renderTable(curPosts());
+  switchTab('posts');};
+document.querySelectorAll('th[data-sort]').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.sort;sortDir=(sortKey===k)?-sortDir:-1;sortKey=k;renderTable(curPosts());});
+
+function switchTab(t){
+  document.querySelectorAll('.nav a,.tabs a').forEach(a=>a.classList.toggle('on',a.dataset.tab===t));
+  document.getElementById('tab-overview').classList.toggle('hide',t!=='overview');
+  document.getElementById('tab-timeline').classList.toggle('hide',t!=='timeline');
+  document.getElementById('tab-clusters').classList.toggle('hide',t!=='clusters');
+  // posts card stays under overview; if posts tab, hide other overview blocks
+  document.getElementById('postsCard').classList.toggle('hide',!(t==='overview'||t==='posts'));
+  if(t==='posts'){document.getElementById('tab-overview').classList.add('hide');}
+}
+document.querySelectorAll('.nav a,.tabs a').forEach(a=>a.onclick=()=>switchTab(a.dataset.tab));
+
+// export
+document.getElementById('exportCsv').onclick=()=>{
+  const rows=curPosts();
+  const csv=[['Title','URL','Date','Category'],...rows.map(p=>[p.t,p.u,p.d,p.c])]
+    .map(r=>r.map(x=>`"${(x||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const b=new Blob([csv],{type:'text/csv'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download=`${cur}-posts-${TODAY}.csv`;a.click();};
+document.getElementById('copyUrls').onclick=()=>{
+  navigator.clipboard.writeText(curPosts().map(p=>p.u).join('\n'));
+  document.getElementById('copyUrls').textContent='✓ Copied';
+  setTimeout(()=>document.getElementById('copyUrls').textContent='⧉ Copy URLs',1500);};
+
+buildSites();render();
+</script>
+</body>
+</html>
